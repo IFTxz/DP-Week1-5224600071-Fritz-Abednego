@@ -1,1 +1,10 @@
+1. What is the invariant structure in your program?
+Struktur invariant dalam program ini adalah alur eksekusi atau life cycle dari sebuah "run" yang didefinisikan di dalam kelas RunSession. Struktur ini mencakup urutan fase yang kaku: mulai dari pembuatan input, perhitungan skor, penentuan reward, pembaruan saldo uang, hingga fase toko . Aturan bahwa permainan harus berjalan tepat selama 3 ronde juga merupakan bagian dari invariant. Logika ini diproteksi sedemikian rupa sehingga urutannya tidak boleh berubah sedikit pun, apa pun modifikasi yang dilakukan pada mekanik permainannya.
 
+2. Which parts are mutable?
+Bagian mutable adalah detail spesifik dari setiap fase yang diwakili oleh interface. Ini mencakup cara angka dihasilkan (IInputGenerator), bagaimana angka tersebut dikonversi menjadi skor (IScoringRule), dan logika pemberian uang berdasarkan skor tersebut (IRewardRule). Dengan memisahkan bagian ini, kita bisa mengubah perilaku game—misalnya membuat reward menjadi dua kali lipat pada ronde genap—tanpa harus membongkar mesin utama .
+
+3. When you replaced the InputGenerator, why didn't RunSession change?RunSession tidak berubah karena ia menerapkan prinsip Dependency Injection dan bergantung pada abstraksi (interface), bukan pada kelas konkret. RunSession hanya tahu bahwa ia memiliki sebuah objek yang bisa melakukan generate(), ia tidak peduli apakah angka itu berasal dari input manual, angka statis, atau angka acak dari RandomInputGenerator. Pemisahan ini membuat kode menjadi decoupled (tidak saling ketergantungan secara keras).
+  
+4. What would happen if scoring logic was placed inside RunSession?
+Jika logika scoring diletakkan di dalam RunSession, maka kelas tersebut akan melanggar Single Responsibility Principle. Akibatnya, setiap kali kita ingin mengubah aturan skor, kita terpaksa memodifikasi file inti RunSession. Hal ini meningkatkan risiko bug pada alur utama permainan dan merusak konsep struktur tetap (invariant), karena mesin utama menjadi terlalu sensitif terhadap perubahan mekanik kecil
